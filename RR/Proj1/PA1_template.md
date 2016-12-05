@@ -60,7 +60,7 @@ ggplot(Total_Steps, aes(x = steps)) +
         labs(title = "Daily Steps", x = "Total Steps", y = "Frequency")
 ```
 
-![](RR_Proj1_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ##### 3. Calculate and report the mean and median of the total number of steps taken per day
 
@@ -121,7 +121,7 @@ ggplot(Interval, aes(x =interval , y=avg_steps)) +
              y = "Average steps per day")
 ```
 
-![](RR_Proj1_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ### Imputing missing values
 
@@ -186,7 +186,7 @@ ggplot(Total_Steps_All, aes(x = total_steps)) +
              y = "No. of Steps")
 ```
 
-![](RR_Proj1_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ##### Compare mean and median with original calculations from the raw dataset
 
@@ -285,4 +285,4 @@ plot<- ggplot(IntervalFull, aes(x =interval ,
 print(plot)
 ```
 
-![](RR_Proj1_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-16-1.png)

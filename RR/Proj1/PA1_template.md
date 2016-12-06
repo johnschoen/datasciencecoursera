@@ -121,7 +121,16 @@ ggplot(Interval, aes(x =interval , y=avg_steps)) +
              y = "Average steps per day")
 ```
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-7-1.png) \#\#\#\#\# Calculate Max 5-min interval
+
+``` r
+Interval[which.max(Interval$avg_steps),]
+```
+
+    ## # A tibble: 1 × 2
+    ##   interval avg_steps
+    ##      <int>     <dbl>
+    ## 1      835  206.1698
 
 ### Imputing missing values
 
@@ -186,7 +195,7 @@ ggplot(Total_Steps_All, aes(x = total_steps)) +
              y = "No. of Steps")
 ```
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ##### Compare mean and median with original calculations from the raw dataset
 
@@ -285,4 +294,4 @@ plot<- ggplot(IntervalFull, aes(x =interval ,
 print(plot)
 ```
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](PA1_template_files/figure-markdown_github/unnamed-chunk-17-1.png)

@@ -91,6 +91,12 @@ ggplot(Interval, aes(x =interval , y=avg_steps)) +
              x = "Interval", 
              y = "Average steps per day")
 ```
+##### Calculate Max 5-min interval
+
+```{r}
+Interval[which.max(Interval$avg_steps),]
+```
+
 
 ###Imputing missing values
 #### Calculate total number of missing values  

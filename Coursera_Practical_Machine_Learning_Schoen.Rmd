@@ -1,0 +1,189 @@
+---
+title: "Practical Machine Learning Project"
+author: "John Schoen"
+date: "May 13, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Load Libraries
+
+```{r}
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+library(randomForest)
+library(knitr)
+library(repmis)
+```
+
+## Introduction
+#### Background
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).
+
+####Data sources
+
+The training data for this project are available here: https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+The test data are available here: https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+The data for this project come from this source: http://groupware.les.inf.puc-rio.br/har. If you use the document you create for this class for any purpose please cite them as they have been very generous in allowing their data to be used for this kind of assignment.
+
+#### Intended Results
+
+The goal of this project is to predict the manner in which they did the exercise. This is the "classe" variable in the training set. We'll use any of the other variables to predict with. This report describes how we built your model, how we used cross validation, our expected out of sample error, and why we made the choices you did. We then used our prediction model to predict 20 different test cases.
+
+## Getting the data
+
+```{r}
+ 
+trainurl <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+testurl <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+training <- source_data(trainurl, na.strings = c("NA", "#DIV/0!", ""), header = TRUE)
+testing <- source_data(testurl, na.strings = c("NA", "#DIV/0!", ""), header = TRUE)
+
+#training <- read.csv("pml-training.csv", na.strings = c("NA", ""))
+#testing <- read.csv("pml-testing.csv", na.strings = c("NA", ""))
+
+
+```
+
+### Data prep
+
+Remove missing values
+ 
+```{r}
+
+training <- training[, colSums(is.na(training)) == 0]
+testing <- testing[, colSums(is.na(testing)) == 0]
+
+```
+
+Remove the first column of data to avoid interference with the algoritms
+
+```{r}
+
+trainData <- training[, -c(1:7)]
+testData <- testing[, -c(1:7)]
+
+dim(trainData)
+dim(testData)
+
+```
+
+## split the data - train and validate sets
+
+
+```{r}
+
+set.seed(1234) 
+inTrain <- createDataPartition(trainData$classe, p = 0.7, list = FALSE)
+train <- trainData[inTrain, ]
+valid <- trainData[-inTrain, ]
+
+dim(train)
+dim(valid)
+
+```
+
+### Prediction: 1) Apply Decision Trees
+
+```{r}
+
+control <- trainControl(method = "cv", number = 5)
+fit_rpart <- train(classe ~ ., data = train, method = "rpart", 
+                   trControl = control)
+print(fit_rpart, digits = 4)
+
+dim(control)
+
+```
+
+Plot the tree
+
+```{r}
+fancyRpartPlot(fit_rpart$finalModel)
+
+```
+
+Predict outcomes with confusion matrix
+
+```{r}
+
+predict_rpart <- predict(fit_rpart, valid)
+(conf_rpart <- confusionMatrix(valid$classe, predict_rpart))
+
+```
+Check accuracy
+
+```{r}
+(accuracy_rpart <- conf_rpart$overall[1])
+
+```
+Plot the accuracy
+
+```{r}
+
+
+predictionsA1 <- predict(fit_rpart, valid, type = "raw")
+testtree <- confusionMatrix(predictionsA1, valid$classe)
+testtree
+plot(testtree$table, col = testtree$byClass, main = paste("Decision Tree Confusion Matrix: Accuracy =", round(testtree$overall['Accuracy'], 4)))
+
+```
+
+### Prediction: 2) Apply Random Forests
+
+```{r}
+
+fit_rf <- train(classe ~ ., data = train, method = "rf", 
+                   trControl = control)
+print(fit_rf, digits = 4) 
+
+```
+
+Predict outcomes using validation set
+
+```{r}
+
+predict_rf <- predict(fit_rf, valid)
+
+(conf_rf <- confusionMatrix(valid$classe, predict_rf))
+
+```
+
+Check accuracy
+
+```{r}
+(accuracy_rf <- conf_rf$overall[1])
+```
+
+Plot the Random Forest accurracy 
+
+```{r}
+
+predictionsB1 <- predict(fit_rf, valid, type = "raw")
+testrf <- confusionMatrix(predictionsB1, valid$classe)
+testrf
+plot(testrf$table, col = testrf$byClass, main = paste("Random Forest Confusion Matrix: Accuracy =", round(testrf$overall['Accuracy'], 4)))
+
+
+```
+
+
+### Compare restults
+
+We can see that the random forest algorithm provides much greater accuracy. 
+
+### Run the prediction on test data using random forest
+
+
+```{r}
+
+(predict(fit_rf, testData))
+
+
+```
+
+
